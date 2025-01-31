@@ -1,14 +1,30 @@
+import os
 import time
 from typing import List
 
 from fastapi import FastAPI, HTTPException, Request, Response
 from pydantic import HttpUrl
+
+from assistent.assistent import Assistent
+from assistent.inference import AIInference
 from schemas.request import PredictionRequest, PredictionResponse
 from utils.logger import setup_logger
+
+
+def _set_env(var: str):
+    if not os.environ.get(var):
+        raise EnvironmentError(f"{var} is not setted")
+_set_env("TAVILY_API_KEY")
+_set_env("LANGSMITH_API_KEY")
+_set_env("OPENAI_TOKEN")
+os.environ["LANGCHAIN_TRACING_V2"] = "true"
+os.environ["LANGCHAIN_PROJECT"] = "MegaSchoolAI"
 
 # Initialize
 app = FastAPI()
 logger = None
+
+inference = AIInference()
 
 
 @app.on_event("startup")
@@ -54,17 +70,13 @@ async def predict(body: PredictionRequest):
     try:
         await logger.info(f"Processing prediction request with id: {body.id}")
         # Здесь будет вызов вашей модели
-        answer = 1  # Замените на реальный вызов модели
-        sources: List[HttpUrl] = [
-            HttpUrl("https://itmo.ru/ru/"),
-            HttpUrl("https://abit.itmo.ru/"),
-        ]
-
+        assistent = Assistent(inference=inference).create_graph()
+        result = assistent.invoke({"query": body.query})
         response = PredictionResponse(
             id=body.id,
-            answer=answer,
-            reasoning="Из информации на сайте",
-            sources=sources,
+            answer=result['answer'],
+            reasoning=result['reasoning'],
+            sources=result['sources'],
         )
         await logger.info(f"Successfully processed request {body.id}")
         return response
