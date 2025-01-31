@@ -1,5 +1,5 @@
 {
-    "model": "anthropic/claude-3.5-sonnet",
+    "model": "openai/gpt-4o-mini",
     "embeddings": "emb-openai/text-embedding-3-large",
     "base_url": "https://api.vsegpt.ru/v1"
 }

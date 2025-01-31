@@ -28,7 +28,7 @@ logger = None
 
 config = load_config(f"{DIR}/config.json")
 inference = AIInference()
-retrieve = LocalRetrieve(embeddings=os.environ['OPENAI_TOKEN'], base_url=config['base_url'], model=config['embeddings'])
+retrieve = LocalRetrieve(OpenaiEmbeddings(api_key=os.environ['OPENAI_TOKEN'], base_url=config['base_url'], model=config['embeddings']))
 
 
 @app.on_event("startup")
@@ -74,9 +74,9 @@ async def predict(body: PredictionRequest):
     try:
         await logger.info(f"Processing prediction request with id: {body.id}")
         # Здесь будет вызов вашей модели
-        assistent = Assistent(inference=inference).create_graph()
+        assistent = Assistent(inference=inference, retrieve=retrieve).create_graph()
         result = assistent.invoke({"query": body.query})
-        result['reasoning'] = result['reasoning'] + f'\nОтвет сгенерирован моделью: {inference.model}'
+        result['reasoning'] = result['reasoning'] + f'\nОтвет сгенерирован моделью: {config['model']}'
         response = PredictionResponse(
             id=body.id,
             answer=result['answer'],
