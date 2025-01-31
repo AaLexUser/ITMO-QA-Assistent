@@ -8,3 +8,9 @@ langgraph
 tavily-python
 langchain-openai
 langchain
+bs4
+chromadb
+tiktoken
+openai
+langchain_text_splitters
+markdownify

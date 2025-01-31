@@ -1,3 +1,6 @@
 from assistent.stages.run_web_retrieve import run_web_retrieve
 from assistent.stages.run_choose_answer import run_choose_answer
 from assistent.stages.run_is_options import run_is_options
+from assistent.stages.run_generate import run_generate
+from assistent.stages.run_is_useful import run_is_useful
+from assistent.stages.run_retrieve import run_retrieve

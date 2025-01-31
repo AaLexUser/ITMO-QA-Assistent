@@ -1,4 +1,5 @@
 {
-    "model": "gpt-4o-mini",
-    "base_url": "https://models.inference.ai.azure.com"
+    "model": "anthropic/claude-3.5-sonnet",
+    "embeddings": "emb-openai/text-embedding-3-large",
+    "base_url": "https://api.vsegpt.ru/v1"
 }

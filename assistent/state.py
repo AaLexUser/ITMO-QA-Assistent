@@ -7,3 +7,5 @@ class AssistentState(TypedDict):
     reasoning: str
     sources: List[HttpUrl]
     is_opt: bool
+    docs: List[str]
+    generation: str

@@ -6,9 +6,11 @@ from fastapi import FastAPI, HTTPException, Request, Response
 from pydantic import HttpUrl
 
 from assistent.assistent import Assistent
-from assistent.inference import AIInference
+from assistent.inference import AIInference, OpenaiEmbeddings
+from assistent.local_retrieve import LocalRetrieve
 from schemas.request import PredictionRequest, PredictionResponse
 from utils.logger import setup_logger
+from utils import load_config, DIR
 
 
 def _set_env(var: str):
@@ -24,7 +26,9 @@ os.environ["LANGCHAIN_PROJECT"] = "MegaSchoolAI"
 app = FastAPI()
 logger = None
 
+config = load_config(f"{DIR}/config.json")
 inference = AIInference()
+retrieve = LocalRetrieve(embeddings=os.environ['OPENAI_TOKEN'], base_url=config['base_url'], model=config['embeddings'])
 
 
 @app.on_event("startup")
@@ -72,6 +76,7 @@ async def predict(body: PredictionRequest):
         # Здесь будет вызов вашей модели
         assistent = Assistent(inference=inference).create_graph()
         result = assistent.invoke({"query": body.query})
+        result['reasoning'] = result['reasoning'] + f'\nОтвет сгенерирован моделью: {inference.model}'
         response = PredictionResponse(
             id=body.id,
             answer=result['answer'],

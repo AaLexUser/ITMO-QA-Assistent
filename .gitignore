@@ -6,3 +6,7 @@ __pycache__
 *.log
 .vscode
 .idea
+#tests
+parse.ipynb
+parse2.ipynb
+test.ipynb
